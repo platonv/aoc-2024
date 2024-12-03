@@ -13,9 +13,12 @@ val pattern = "mul\\(([0-9]{1,3}),([0-9]{1,3})\\)|do\\(\\)|don't\\(\\)".r
 
 val matches = pattern.findAllMatchIn(inputString).toList
 
-// val res = matches.map { m =>
-//     m.group(1).toInt * m.group(2).toInt
-// }.sum
+val part1Res = matches.map { m =>
+    m.group(1).toInt * m.group(2).toInt
+}.sum
+
+println("Part 1")
+println(part1Res)
 
 val res =matches.foldLeft((true, 0)) {
     case ((true, result), m) => 
@@ -34,4 +37,5 @@ val res =matches.foldLeft((true, 0)) {
         }
 }
 
+println("Part 2")
 println(res)
