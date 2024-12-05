@@ -43,7 +43,33 @@ def checkRules(updates: List[Int]): Boolean =
         } }
     }
 
-val res = updates.map { update =>
+def swap(arr: List[Int], a: Int, b: Int): List[Int] = 
+    arr.updated(a, arr(b)).updated(b, arr(a))
+
+def tryFix(updates: List[Int]): List[Int] =
+    val res = updates.zipWithIndex.flatMap { case (update, index) =>
+        val others = updates.takeRight(updates.size - index - 1)
+
+        others.flatMap { other => rules.get(other) match {
+            case Some(values) => if (values.contains(update)) {
+                Some((update, other))
+            } else None
+            case None => None
+        } }
+        
+    }
+    val fixed = res.foldLeft(updates) { case (acc, (update, other)) =>
+        val updateIdx = acc.indexOf(update)
+        val otherIdx = acc.indexOf(other)
+        swap(acc, updateIdx, otherIdx)
+    }
+    if (checkRules(fixed)) {
+        fixed
+    } else {
+        tryFix(fixed)
+    }
+
+val part1 = updates.map { update =>
     if (checkRules(update)) {
         update(update.length / 2)
     } else {
@@ -51,5 +77,21 @@ val res = updates.map { update =>
     }
 }.sum
 
+println("Part 1:")
+println(part1)
+
 println(rules)
-println(res)
+
+val part2 = updates.map { update =>
+    if (!checkRules(update)) {
+        val fixed = tryFix(update)
+        println(s"Original: $update")
+        println(s"Fixed: $fixed")
+        fixed(fixed.length / 2)
+    } else {
+        0
+    }
+}.sum
+
+println("Part 2:")
+println(part2)
